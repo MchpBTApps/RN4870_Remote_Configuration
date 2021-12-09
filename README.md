@@ -114,3 +114,9 @@ Expected response:
 **NOTE**: To exit Remote Command mode send “!,0<`CR`>”.
 
 Expected response:   *%RMT_CMD_OFF%*
+
+##Master Control with an Android Device
+Using an Android device involves more effort than using two RN4871 modules. Since the Android device does not support the same exact commands as an RN4871 module these commands must be written to the BLE characteristics using an Android App such as Smart Discover. All data is passed as hex data so any ASCII commands must be converted first. The step by step procedure to configure is provided below.
+
+1. Create a secure, bonded connection between your Android device and the RN4871 Remote module. This can be done using the Microchip Bluetooth Data (MBD) App on your Android device. Launch the App and select the Smart Discovery tool. The RN4871 module should appear advertising as 'Remote'. Click on it to establish connection.
+![MBD App screen 1]((https://github.com/MchpBTApps/RN4870_Remote_Configuration/blob/main/Figures/MBDApp1.png)
