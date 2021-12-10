@@ -164,3 +164,28 @@ You should now see the message: *%RMT_CMD_ON%*
 
 We are now in Remote Command mode (to exit Remote Command mode write hex 46).
 
+### Example 1:
+
+In this example we will send a command to the RN4871 Remote module asking it for its firmware version. To do this we will write a hex command to the first characteristic 49535343-1E4D-4BD9-BA61-23C647249616.
+
+First, we need to enable notifications to see the returned status coming from the RN4871 Remote module. In the box labeled “Read”, there is an enable switch. Move this to the “On” position.
+ 
+Now we can send the command to the RN4871 Remote module. In module to module commands we would send the ASCII command V<`CR`> but here we must convert the ASCII commands into hex. The hex representation of ASCII “V” is 0x56 and <`CR`> (Carriage Return) is 0x0D. The hex numbers to be sent would be 560D. Now in the box labelled “Write” enter 560D then click the “Write” button. You should see a response in the notification window above. Remember this is in hex notation so if you convert this into ASCII it should resemble:
+
+*RN4871 V1.18.3 4/14/2016 (c)Microchip Technology Inc<`CR`><`LF`>*
+
+*RMT>*
+
+Converting ASCII into hex the content is:
+
+*RN4871*		52 4E 34 38 37 31
+
+*V1.18.3*		56 31 2E 31 38 2E 33
+
+*4/14/2016*		34 2F 31 34 2F 32 30 31 36
+
+*(c)Microchip Technology Inc*	28 63 29 4D 69 63 72 6F 63 68 69 70 20 54 65 63 68 6E 6F 6C 6F 67 79 20 49 6E 63
+
+*<`CR`><`LF`>*		0D 0A
+
+*RMT>*			52 4D 54 3E 20
