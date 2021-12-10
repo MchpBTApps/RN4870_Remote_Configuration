@@ -115,8 +115,53 @@ Expected response:
 
 Expected response:   *%RMT_CMD_OFF%*
 
-##Master Control with an Android Device
+## Master Control with an Android Device
+
 Using an Android device involves more effort than using two RN4871 modules. Since the Android device does not support the same exact commands as an RN4871 module these commands must be written to the BLE characteristics using an Android App such as Smart Discover. All data is passed as hex data so any ASCII commands must be converted first. The step by step procedure to configure is provided below.
 
 1. Create a secure, bonded connection between your Android device and the RN4871 Remote module. This can be done using the Microchip Bluetooth Data (MBD) App on your Android device. Launch the App and select the Smart Discovery tool. The RN4871 module should appear advertising as 'Remote'. Click on it to establish connection.
-![MBD App screen 1]((https://github.com/MchpBTApps/RN4870_Remote_Configuration/blob/main/Figures/MBDApp1.png)
+![MBD App screen 1](https://github.com/MchpBTApps/RN4870_Remote_Configuration/blob/main/Figures/MBDApp1.png)
+
+2. The connection status intially should show up as 'Disconnected'. Click on the top-right menu (3 vertical dots) and the option 'Bond' should show up. Click on 'Bond'. The status should change to 'Disconnected - Bonded'.
+![MBD App screen 2](https://github.com/MchpBTApps/RN4870_Remote_Configuration/blob/main/Figures/MBDApp2.png)
+
+3. Click on the 'Connect' button on the top right.
+![MBD App screen 3](https://github.com/MchpBTApps/RN4870_Remote_Configuration/blob/main/Figures/MBDApp3.png)
+
+4. Once the connection is established you should see the two services shown below – Device Information and Microchip Data Service, as shown below.
+![MBD App screen 4](https://github.com/MchpBTApps/RN4870_Remote_Configuration/blob/main/Figures/MBDApp4.png)
+
+5. Once the connection is established you should see the two services shown below – Device Information and Microchip Data Service, as shown below.
+![MBD App screen 5](https://github.com/MchpBTApps/RN4870_Remote_Configuration/blob/main/Figures/MBDApp5.png)
+You should also see the connection being established on the RN4871 Remote module side with a PC serial terminal with a message similar to 
+*%CONNECT,1,5C434D58D439%%CONN_PARAM,0006,0000,01F4%%SECURED%%CONN_PARAM,0027,0000,01F4%%BONDED%%CONN_PARAM,0006,0000,01F4%%CONN_PARAM,0027,0000,01F4%%DISCONNECT%%CONNECT,1,79E6F8B64221%%SECURED%*
+
+6. Select the “Microchip Data Service” and you will see this service has three Characteristics. The Transparent UART Service is the primary service with a UUID set to:  
+49535343-FE7D-4AE5-8FA9-9FAFD205E455.
+- The Transparent UART Service contains the following characteristics:
+  - Transparent UART TX: 
+    - Attributes: Write, Write without response, Notify and Indicate.
+    - 49535343-1E4D-4BD9-BA61-23C647249616
+    - This characteristic is used for transmitting data to the RN4871 Remote module.
+ 
+  - Transparent UART RX: 
+    - Attributes: Write and Write without response.
+    - 49535343-8841-43F4-A8D4-ECBE34729BB3 
+    - This characteristic is used for receiving data from the RN4871 Remote module. 
+
+  - Transparent UART Control: 
+    - Attributes: Write and Notify.
+    - 49535343-4C8A-39B3-2F49-511CFF073B7E
+    - This characteristic is used for control data with the RN4871 Remote module
+
+![MBD App screen 6](https://github.com/MchpBTApps/RN4870_Remote_Configuration/blob/main/Figures/MBDApp6.png)
+
+7. To get into the Remote Command mode, we need to send the PIN code to the RN4871 Remote module. Since the Android device does not support the same exact methods, we must write to the associated characteristic. Sending an ASCII “Y” first and then the PIN code will accomplish this. Converting the ASCII “Y1234” into a hex representation of 5931323334 is required. Select the third characteristic ending in B7E. Now enter 5931323334 into the box labelled “Write” and click the “Write” button.
+
+![MBD App screen 7](https://github.com/MchpBTApps/RN4870_Remote_Configuration/blob/main/Figures/MBDApp7.png)
+
+
+You should now see the message: *%RMT_CMD_ON%*
+
+We are now in Remote Command mode (to exit Remote Command mode write hex 46).
+
