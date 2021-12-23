@@ -1,4 +1,4 @@
-# RN4870_Remote_Configuration
+# RN4870 Remote Configuration feature
 This note describes the procedure required to demonstrate the RN4871 remote command feature. This feature allows the control of an RN4871 module without the use of a host microcontroller remotely from either another RN4871 module or an Android app.
 
 <!--- This document is written by Raghu (Microchip Tech) to explain the use to the Remote configuration feature in the RN4871 modules.) -->
@@ -7,9 +7,9 @@ The remote command feature works by using a special BLE GATT service that emulat
 
 The remote command feature can be controlled by either another RN4871 module, a competitors BLE module or an Android app.
 
-For the first demonstration two RN4871 modules will be used. One will be called the Master Module the other the Remote Module. The Master Module is connected to the PC and is in control of the Remote Module. The Remote Module is connected to the PC for configuration and status feedback only.
+For the first demonstration two RN4871 modules will be used. One will be called the Central Module the other the Remote Module. The Central Module is connected to the PC and is in control of the Remote Module. The Remote Module is connected to the PC for configuration and status feedback only.
 
-We will configure the Remote Module first, so when we get to the connection sequence on the Master module, it can connect properly
+We will configure the Remote Module first, so when we get to the connection sequence on the Central module, it can connect properly
 
 The step by step procedure to configuration is provided below. Each step shows what command to issue to the RN4871 module in the format of - *TX: command*.
 
@@ -40,7 +40,7 @@ The expected response for each Tx command sent, from the RN4870/71 module in the
     - TX: *“R,1<`CR`>*
     - RX: *AOK<`CR`><`LF`>*
 
-The above steps complete the configuration for the RN4871 Remote Module. Next the RN4871 Master Module is configured as outlined below.
+The above steps complete the configuration for the RN4871 Remote Module. Next the RN4871 Central Module is configured as outlined below.
 
 1. Enter command mode by sending $$$
     - TX: *$$$*
@@ -51,8 +51,8 @@ The above steps complete the configuration for the RN4871 Remote Module. Next th
 3. Enter command mode by sending $$$
     - TX: *$$$*
     - RX: *CMD>*
-4. Set name of module to “Remote” by sending “SN,Master<`CR`>”
-    - TX: *SN,Master<`CR`>*
+4. Set name of module to “Remote” by sending “SN Central<`CR`>”
+    - TX: *SN Central<`CR`>*
     - RX: *AOK<`CR`><`LF`>*
 5. Enable device information and transparent UART operation by sending “SS,C0<`CR`>”
     - TX: *SS,C0<`CR`>*
@@ -115,7 +115,7 @@ Expected response:
 
 Expected response:   *%RMT_CMD_OFF%*
 
-## Master Control with an Android Device
+## Central Control with an Android Device
 
 Using an Android device involves more effort than using two RN4871 modules. Since the Android device does not support the same exact commands as an RN4871 module these commands must be written to the BLE characteristics using an Android App such as Smart Discover. All data is passed as hex data so any ASCII commands must be converted first. The step by step procedure to configure is provided below.
 
@@ -189,3 +189,102 @@ Converting ASCII into hex the content is:
 *<`CR`><`LF`>*		0D 0A
 
 *RMT>*			52 4D 54 3E 20
+
+### Example 2:
+In this example we will ask the RN4871 Remote module to “Dump” it’s information. The command will reply with the following information about the RN4871 module:
+
+*Bluetooth Address* 3481F407DB41 *<`CR`><`LF`>*
+
+*Module Name* Remote *<`CR`><`LF`>*
+
+*Connection Status* no *<`CR`><`LF`>*
+
+*Security Status* 2 *<`CR`><`LF`>*
+
+*Features* 0000 *<`CR`><`LF`>*
+
+*Services* C0 *<`CR`><`LF`>*
+
+
+(For more details please refer to the RN4870/71 Bluetooth Low Energy Module User’s Guide)
+
+The hex representation of ASCII “D” is 0x44 and *<`CR`>* (Carriage Return) is 0x0D. The hex numbers to be sent would be 440D. In the box labelled “Write” enter *440D* then click the “Write” button. You should see a response in the notification window above. Remember this is in hex notation so if you convert this into ASCII it should resemble:
+
+BTA=3481F407DB41 *<`CR`><`LF`>*
+
+Name=Remote *<`CR`><`LF`>*
+
+Connected=no *<`CR`><`LF`>*
+
+Authen=2 *<`CR`><`LF`>*
+
+Features=0000 *<`CR`><`LF`>*
+
+Services=C0 *<`CR`><`LF`>*
+
+
+
+Converting the ASCII info into hex, the info shows up as :
+
+BTA=3481F407DB41 *<`CR`><`LF`>*
+
+	42 54 41 3D 33 34 38 31 46 34 30 37 44 42 34 31 0D 0A
+
+Name=Remote *<`CR`><`LF`>*
+
+	4E 61 6D 65 3D 52 65 6D 6F 74 65 0D 0A
+
+Connected=no *<`CR`><`LF`>*
+
+	43 6F 6E 6E 65 63 74 65 64 3D 6E 6F 0D 0A
+
+Authen=2 *<`CR`><`LF`>*
+
+	41 75 74 68 65 6E 3D 32 0D 0A
+
+Features=0000 *<`CR`><`LF`>*
+
+	46 65 61 74 75 72 65 73 3D 30 30 30 30 0D 0A
+
+Services=C0 *<`CR`><`LF`>*
+
+	53 65 72 76 69 63 65 73 3D 43 30 0D 0A
+
+RMT>
+
+	52 4D 54 3E 20
+			
+
+### Example 3:
+
+In this example we will control an LED on the RN4871 PICtail Plus board. To prepare for this, add a jumper wire between the LED TEST header LED2 and APP Default header J14 pin 6/P1_2.
+
+*Turn LED On*
+
+The ASCII command for this is |O,08,00<CR>
+ 
+The HEX command for this is 7C4F2C30382C30300D
+
+
+
+*Turn LED Off*
+
+The ASCII command for this is |O,08,08<CR>
+ 
+The HEX command for this is 7C4F2C30382C30380D
+
+
+On the Smart Discovery app, write these values to the characteristic 49535343-1E4D-4BD9-BA61-23C647249616 to control the LED status.
+
+### Ending the Remote Command Session
+
+Now that we have used the Remote Command mode to control the RN4871 Remote module, there is also a need to end the Remote Command session.
+ 
+The ASCII command for this is F *<`CR`>*
+
+The HEX command for this is 460D
+
+On the Smart Discovery app write these values to the characteristic 
+49535343-4C8A-39B3-2F49-511CFF073B7E to exit Remote Command mode.
+
+You should now see the message:		*%RMT_CMD_OFF%*
